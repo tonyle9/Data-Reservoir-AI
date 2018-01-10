@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Reservoir implements Serializable {
 
-    private final int computeSize;
+    final int computeSize;
     private final int reservoirSize;
     private final int inputSize;
     private final int writableSize;
@@ -19,7 +19,7 @@ public class Reservoir implements Serializable {
     private int weightSize;
     float[] weights;
     private transient float[] reservoir;
-    private transient float[][] computeBuffers;
+    transient float[][] computeBuffers;
     private transient RNG rng;
     private final ArrayList<Compute> list;
 
@@ -89,7 +89,7 @@ public class Reservoir implements Serializable {
         }
     }
 
-    void gather(float[] g, int weightIndex) {
+    void gather(float[] g) {
         int mask = computeSize - 1;
         for (int i = 0; i < computeSize; i++) {
             g[i] = reservoir[i] * weights[weightIndex++];
@@ -103,7 +103,7 @@ public class Reservoir implements Serializable {
         WHT.fastRP(g, hashIndex++);
     }
 
-    void scatter(float[] s, int weightIndex) {
+    void scatter(float[] s) {
         int mask = computeSize - 1;
         for (int i = inputSize + writableSize; i < reservoirSize; i++) {
             if ((i & mask) == 0) {
@@ -116,7 +116,15 @@ public class Reservoir implements Serializable {
     void scatterWritable(float[] s, int location) {
         System.arraycopy(s, 0, reservoir, inputSize + location, s.length);
     }
-
+    
+    int sizeGather(){
+        return reservoirSize;
+    }
+    
+    int sizeScatter(){
+        return reservoirSize-inputSize-writableSize;
+    }
+    
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         prepareForUse(); //Set up all the buffers and working arrays

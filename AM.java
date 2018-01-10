@@ -1,6 +1,8 @@
 package s6regen;
 
-class AM {
+import java.io.Serializable;
+
+class AM implements Serializable {
 
   int vecLen;
   int density;
