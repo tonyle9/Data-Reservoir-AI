@@ -14,10 +14,12 @@ public class Main extends Application {
     public static void main(String[] args) {
        
         
-        Reservoir r=new Reservoir(16,256,16,16,16);
+        Reservoir r=new Reservoir(16,64,16,16,16);
         Compute c=new ComputeLayer(r,3);
         r.addComputeUnit(c);
+        r.prepareForUse();
         Reservoir s=new Reservoir(r);
+        s.prepareForUse();
         
         launch(args);
     }

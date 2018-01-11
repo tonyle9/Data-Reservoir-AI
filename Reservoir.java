@@ -68,6 +68,7 @@ public class Reservoir implements Serializable {
     
 // Call after adding compute units
     public void prepareForUse() {
+        reservoir = new float[reservoirSize];
         int bN = 0;
         for (Compute c : list) {
             weightSize += c.weightSize();
@@ -75,12 +76,14 @@ public class Reservoir implements Serializable {
                 bN = c.buffersRequired();
             }
         }
-        if (weights != null) {
-            weights = new float[weightSize];
-        }
-        reservoir = new float[reservoirSize];
         computeBuffers = new float[bN][computeSize];
         rng = new RNG();
+        if (weights == null) {
+            weights = new float[weightSize];
+            for(int i=0;i<weightSize;i++){
+                weights[i]=rng.nextFloatSym();
+            }
+        }
     }
 
     public void computeAll() {
