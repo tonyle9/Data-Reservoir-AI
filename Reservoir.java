@@ -60,12 +60,15 @@ public class Reservoir implements Serializable {
         writableSize = r.writableSize;
         outputSize = r.outputSize;
         list = new ArrayList<>(r.list);
+        for (Compute c : list) {
+            c.setReservoir(this);  //leaking this in a constructor, good grief. 
+        }
     }
 
     public void addComputeUnit(Compute c) {
         list.add(c);
     }
-    
+
 // Call after adding compute units
     public void prepareForUse() {
         reservoir = new float[reservoirSize];
@@ -80,8 +83,8 @@ public class Reservoir implements Serializable {
         rng = new RNG();
         if (weights == null) {
             weights = new float[weightSize];
-            for(int i=0;i<weightSize;i++){
-                weights[i]=rng.nextFloatSym();
+            for (int i = 0; i < weightSize; i++) {
+                weights[i] = rng.nextFloatSym();
             }
         }
     }
@@ -135,15 +138,15 @@ public class Reservoir implements Serializable {
     void scatterWritable(float[] s, int location) {
         System.arraycopy(s, 0, reservoir, inputSize + location, s.length);
     }
-    
-    int sizeGather(){
+
+    int sizeGather() {
         return reservoirSize;
     }
-    
-    int sizeScatter(){
-        return reservoirSize-inputSize-writableSize;
+
+    int sizeScatter() {
+        return reservoirSize - inputSize - writableSize;
     }
-    
+
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         prepareForUse(); //Set up all the buffers and working arrays

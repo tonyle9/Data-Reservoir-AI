@@ -1,5 +1,6 @@
 package s6regen;
 
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -20,6 +21,11 @@ public class Main extends Application {
         r.prepareForUse();
         Reservoir s=new Reservoir(r);
         s.prepareForUse();
+        
+        float[] in=new float[16];
+        Arrays.fill(in, 3.3f);
+        s.setInput(in);
+        s.computeAll();
         
         launch(args);
     }
