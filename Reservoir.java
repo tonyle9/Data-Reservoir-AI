@@ -1,3 +1,18 @@
+// Contains most of the information for the Data Reservoir Compute AI.
+// Including all trainable weights for all Compute class operators.
+// One reason for this is to simplify access for evolution based algorithms.
+// All Compute based subclasses operate on computeSize-ed data arrays.
+// They get data using the gather method which uses random projection 
+// base dimension reduction of the entire reservoir.  A change in one single
+// value in the reservoir produces a unique pattern change in the gathered data.
+// The gather method also can select specific places in the reservoir to get
+// information from because of weighting prior to the random projection process.
+// The reservoir is composed of 3 parts <input><writable section><general>
+// When a compute object is finished it can either scatter the result to a
+// specific place in the writable section or again use random projection with
+// weighting based selection to write to the general section.
+// This should allow for complex connectivity (eg. modualar) to emerge.  As well
+// as recurrence.
 package s6regen;
 
 import java.io.IOException;
@@ -21,7 +36,7 @@ public class Reservoir implements Serializable {
     private transient float[] reservoir;
     transient float[][] computeBuffers;
     private transient RNG rng;
-    private final ArrayList<Compute> list;
+    private final ArrayList<Compute> list; // list of all compute units for the AI
 
     Reservoir(int computeSize, int reservoirSize, int inputSize, int writableSize, int outputSize) {
         assert computeSize >= 16 : "Requirement for WTH class";

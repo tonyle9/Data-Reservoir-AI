@@ -1,3 +1,6 @@
+// Associative memory to provide long term memory.
+// Reads input address from one gathered source and scatters the result.
+// Reads input from another source as an address and stores to the writable area.
 package s6regen;
 
 public final class ComputeAMWritable extends Compute{

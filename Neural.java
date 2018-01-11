@@ -1,7 +1,6 @@
-
-package s6regen;
-
 // Evolve deep random projection neural network class
+// Example. Not part of Data Reservoir Compute AI.
+package s6regen;
 
 class Neural {
 

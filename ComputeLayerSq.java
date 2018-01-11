@@ -1,13 +1,13 @@
-// Calculates a single neural network layer, linear/no activation function.
 package s6regen;
 
 import java.util.Arrays;
-
-public class ComputeLayer extends Compute {
+// Calculates a single neural network layer with x square activation function.
+// Sparsity inducing and no problem with evolution based training.
+public class ComputeLayerSq extends Compute {
 
     private final int density;
 
-    ComputeLayer(Reservoir r, int density) {
+    ComputeLayerSq(Reservoir r, int density) {
         super(r);
         assert density > 0 : "Density at least 1";
         this.density = density;
@@ -26,7 +26,7 @@ public class ComputeLayer extends Compute {
             if (idx == 0) {
                 WHT.fastRP(workA, reservoir.hashIndex++);
             }
-            workB[idx] += workA[idx] * reservoir.weights[reservoir.weightIndex++];
+            workB[idx] += workA[idx] * workA[idx] * reservoir.weights[reservoir.weightIndex++];
         }
         reservoir.scatter(workB);
     }

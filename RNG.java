@@ -1,3 +1,5 @@
+// Random number generator with methods useful for some types of 
+// evolution based algorithms.  Uses Xor128+ algorithm and a counter mixing RNG.
 package s6regen;
 
 final public class RNG {
