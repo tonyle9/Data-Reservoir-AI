@@ -12,12 +12,19 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     public static void main(String[] args) {
+       
+        
+        Reservoir r=new Reservoir(16,256,16,16,16);
+        Compute c=new ComputeLayer(r,3);
+        r.addComputeUnit(c);
+        Reservoir s=new Reservoir(r);
+        
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Nothing done yet.");
+        primaryStage.setTitle("Test.");
         StackPane root = new StackPane();
         WritableImage img = new WritableImage(300, 250);
         Canvas canvas = new Canvas(300, 250);

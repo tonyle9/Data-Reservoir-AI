@@ -57,7 +57,7 @@ public class Reservoir implements Serializable {
         computeSize = r.computeSize;
         reservoirSize = r.reservoirSize;
         inputSize = r.inputSize;
-        writableSize = r.weightSize;
+        writableSize = r.writableSize;
         outputSize = r.outputSize;
         list = new ArrayList<>(r.list);
     }
@@ -65,7 +65,8 @@ public class Reservoir implements Serializable {
     public void addComputeUnit(Compute c) {
         list.add(c);
     }
-
+    
+// Call after adding compute units
     public void prepareForUse() {
         int bN = 0;
         for (Compute c : list) {
