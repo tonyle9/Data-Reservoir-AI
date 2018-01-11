@@ -11,8 +11,7 @@
 // When a compute object is finished it can either scatter the result to a
 // specific place in the writable section or again use random projection with
 // weighting based selection to write to the general section.
-// This should allow for complex connectivity (eg. modualar) to emerge.  As well
-// as recurrence.
+// This should allow for complex connectivity (eg. modualar) to emerge.
 package s6regen;
 
 import java.io.IOException;
@@ -53,23 +52,11 @@ public class Reservoir implements Serializable {
         list = new ArrayList<>();
     }
 
-    Reservoir(Reservoir r) {
-        computeSize = r.computeSize;
-        reservoirSize = r.reservoirSize;
-        inputSize = r.inputSize;
-        writableSize = r.writableSize;
-        outputSize = r.outputSize;
-        list = new ArrayList<>(r.list);
-        for (Compute c : list) {
-            c.setReservoir(this);  //leaking this in a constructor, good grief. 
-        }
-    }
-
     public void addComputeUnit(Compute c) {
         list.add(c);
     }
 
-// Call after adding compute units
+// Call after adding compute units. Don't add more compute units and call again.
     public void prepareForUse() {
         reservoir = new float[reservoirSize];
         int bN = 0;
@@ -96,6 +83,12 @@ public class Reservoir implements Serializable {
             c.compute();
         }
     }
+    
+    public void resetHeldStateAll() {
+        for (Compute c : list) {
+            c.resetHeldState();
+        }
+    }
 
     public void setInput(float[] input) {
         System.arraycopy(input, 0, reservoir, 0, inputSize);
@@ -105,10 +98,22 @@ public class Reservoir implements Serializable {
         System.arraycopy(reservoir, inputSize + writableSize, output, 0, outputSize);
     }
 
-    public void copyWeightsMutateFrom(Reservoir r, long mutatePrecision) {
+    public void mutate(long mutatePrecision) {
         for (int i = 0; i < weightSize; i++) {
-            weights[i] = rng.mutateXSym(r.weights[i], mutatePrecision);
+            weights[i] = rng.mutateXSym(weights[i], mutatePrecision);
         }
+    }
+    
+    public int getWeightSize(){
+        return weightSize;
+    }
+    
+    public void getWeights(float[] vec){
+        System.arraycopy(weights, 0, vec, 0, weightSize);
+    }
+    
+    public void setWeights(float[] vec){
+        System.arraycopy(vec, 0, weights, 0, weightSize);
     }
 
     void gather(float[] g) {

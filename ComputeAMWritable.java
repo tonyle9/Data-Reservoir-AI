@@ -36,5 +36,10 @@ public final class ComputeAMWritable extends Compute{
     public int buffersRequired() {
         return 3;
     } 
+    
+    @Override
+    public void resetHeldState(){
+        memory.reset();
+    }
 }
 

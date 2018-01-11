@@ -35,4 +35,9 @@ public final class ComputeAM extends Compute{
         return 3;
     }
     
+    @Override
+    public void resetHeldState(){
+        memory.reset();
+    }
+    
 }

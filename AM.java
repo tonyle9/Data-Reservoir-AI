@@ -9,6 +9,7 @@ is quite different bit-wise.
 package s6regen;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 class AM implements Serializable {
 
@@ -33,9 +34,9 @@ class AM implements Serializable {
         workB = new float[vecLen];
     }
 
-    void recallVec(float[] resultVec, float[] inVec) {
+    public void recallVec(float[] resultVec, float[] inVec) {
         System.arraycopy(inVec, 0, workA, 0, vecLen);
-        java.util.Arrays.fill(resultVec, 0f);
+        Arrays.fill(resultVec, 0f);
         for (int i = 0; i < density; i++) {
             WHT.fastRP(workA, hash + i);
             WHT.signOf(bipolar[i], workA);
@@ -43,7 +44,7 @@ class AM implements Serializable {
         }
     }
 
-    void trainVec(float[] targetVec, float[] inVec) {
+    public void trainVec(float[] targetVec, float[] inVec) {
         float rate = 1f / density;
         recallVec(workB, inVec);
         for (int i = 0; i < vecLen; i++) {
@@ -51,6 +52,12 @@ class AM implements Serializable {
         }
         for (int i = 0; i < density; i++) {                       // correct the weights 
             VecOps.multiplyAddTo(weights[i], workB, bipolar[i]);  // to give the required output
+        }
+    }
+    
+    public void reset(){
+        for(float[] x:weights){
+            Arrays.fill(x, 0f);
         }
     }
 }

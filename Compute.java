@@ -10,14 +10,13 @@
 package s6regen;
 public abstract class Compute implements java.io.Serializable {
     
-    Reservoir reservoir;
+    final Reservoir reservoir;
     
     public Compute(Reservoir r){
         reservoir=r;
     }
     
-    void setReservoir(Reservoir r){
-		reservoir=r;
+    public void resetHeldState(){
     }
     
     public abstract void compute();

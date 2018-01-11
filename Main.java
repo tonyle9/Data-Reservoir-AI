@@ -19,13 +19,11 @@ public class Main extends Application {
         Compute c=new ComputeLayer(r,3);
         r.addComputeUnit(c);
         r.prepareForUse();
-        Reservoir s=new Reservoir(r);
-        s.prepareForUse();
         
         float[] in=new float[16];
         Arrays.fill(in, 3.3f);
-        s.setInput(in);
-        s.computeAll();
+        r.setInput(in);
+        r.computeAll();
         
         launch(args);
     }
