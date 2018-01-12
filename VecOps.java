@@ -1,35 +1,35 @@
 package s6regen;
 
-class VecOps {
+public class VecOps {
 
     final static float MIN_SQ = 1e-20f;
 
-    static void multiply(float[] rVec, float[] x, float[] y) {
+    public static void multiply(float[] rVec, float[] x, float[] y) {
         for (int i = 0; i < rVec.length; i++) {
             rVec[i] = x[i] * y[i];
         }
     }
 
-    static void multiplyAddTo(float[] rVec, float[] x, float[] y) {
+    public static void multiplyAddTo(float[] rVec, float[] x, float[] y) {
         for (int i = 0; i < rVec.length; i++) {
             rVec[i] += x[i] * y[i];
         }
     }
 
     // x-y
-    static void subtract(float[] rVec, float[] x, float[] y) {
+    public static void subtract(float[] rVec, float[] x, float[] y) {
         for (int i = 0; i < rVec.length; i++) {
             rVec[i] = x[i] - y[i];
         }
     }
 
-    static void add(float[] rVec, float[] x, float[] y) {
+    public static void add(float[] rVec, float[] x, float[] y) {
         for (int i = 0; i < rVec.length; i++) {
             rVec[i] = x[i] + y[i];
         }
     }
 
-    static void scale(float[] rVec, float[] x, float s) {
+    public static void scale(float[] rVec, float[] x, float s) {
         for (int i = 0; i < rVec.length; i++) {
             rVec[i] = x[i] * s;
         }
@@ -37,7 +37,7 @@ class VecOps {
 
     // reduce the magnitude by t, if the magnitude is reduced below 0 it is made 0.
     // with t=1, 1.5 becomes 0.5, -2.5 becomes -1.5, .9 becomes 0 etc.
-    static void truncate(float[] rVec, float[] x, float t) {
+    public static void truncate(float[] rVec, float[] x, float t) {
         for (int i = 0; i < rVec.length; i++) {
             int f = Float.floatToRawIntBits(x[i]);
             int s = f & 0x80000000;  // get sign bit
@@ -49,7 +49,7 @@ class VecOps {
         }
     }
 
-    static float sumSq(float[] vec) {
+    public static float sumSq(float[] vec) {
         float sum = 0f;
         for (int i = 0; i < vec.length; i++) {
             sum += vec[i] * vec[i];
@@ -59,7 +59,7 @@ class VecOps {
 
     // Assuming each elememt of is from a Gaussian distribution of zero mean
     // adjust the variance of each element to 1.
-    static void adjust(float[] rVec, float[] x) {
+    public static void adjust(float[] rVec, float[] x) {
         float adj = 1f / (float) Math.sqrt((sumSq(x) / x.length) + MIN_SQ);
         scale(rVec, x, adj);
     }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 public class Reservoir implements Serializable {
 
+    final static float MIN_SQ = 1e-20f;
     final int computeSize;
     private final int reservoirSize;
     private final int inputSize;
@@ -37,7 +38,7 @@ public class Reservoir implements Serializable {
     private transient RNG rng;
     private final ArrayList<Compute> list; // list of all compute units for the AI
 
-    Reservoir(int computeSize, int reservoirSize, int inputSize, int writableSize, int outputSize) {
+    public Reservoir(int computeSize, int reservoirSize, int inputSize, int writableSize, int outputSize) {
         assert computeSize >= 16 : "Requirement for WTH class";
         assert (computeSize & (computeSize - 1)) == 0 : "Power of 2 for WHT class";
         assert reservoirSize % computeSize == 0 : "Make multiple of computeSize";
@@ -120,16 +121,17 @@ public class Reservoir implements Serializable {
 
     void gather(float[] g) {
         int wtIdx = weightIndex; // Get as local as an optimization
-        float[] wt = weights;    // also weights because not final
+        float[] wt = weights;    // Check later if this is so necessary
+        float[] res = reservoir;
         int i = 0;
         while (i < computeSize) {
-            g[i] = reservoir[i] * wt[wtIdx++];
+            g[i] = res[i] * wt[wtIdx++];
             i++;
         }
         while (i < reservoirSize) {
             WHT.fastRP(g, hashIndex++);
             for (int j = 0; j < computeSize; j++) {
-                g[j] += reservoir[i++] * wt[wtIdx++];
+                g[j] += res[i++] * wt[wtIdx++];
             }
         }
         weightIndex = wtIdx;  // set weightIndex to correct value
@@ -140,12 +142,13 @@ public class Reservoir implements Serializable {
 // it again.
     void scatter(float[] s) {
         int wtIdx = weightIndex; // Get as local as an optimization
-        float[] wt = weights;    // also weights because not final
+        float[] wt = weights;
+        float[] res = reservoir;
         int i = inputSize + writableSize;
         while (i < reservoirSize) {
             WHT.fastRP(s, hashIndex++);
             for (int j = 0; j < computeSize; j++) {
-                reservoir[i] += s[j] * wt[wtIdx++];
+                res[i] += s[j] * wt[wtIdx++];
                 i++;
             }
         }
@@ -162,6 +165,18 @@ public class Reservoir implements Serializable {
 
     int sizeScatter() {
         return reservoirSize - inputSize - writableSize;
+    }
+
+    void normalize() {
+        int start = inputSize + writableSize;
+        float sumSq = 0f;
+        for (int i = start; i < reservoirSize; i++) {
+            sumSq += reservoir[i] * reservoir[i];
+        }
+        float adj = 1f / (float) Math.sqrt((sumSq / (reservoirSize - start)) + MIN_SQ);
+        for (int i = start; i < reservoirSize; i++) {
+            reservoir[i] *= adj;
+        }
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

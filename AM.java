@@ -11,7 +11,7 @@ package s6regen;
 import java.io.Serializable;
 import java.util.Arrays;
 
-class AM implements Serializable {
+public class AM implements Serializable {
 
     int vecLen;
     int density;
@@ -24,7 +24,7 @@ class AM implements Serializable {
     // vecLen must be 2,4,8,16,32.....
     // density is the maximum number of vector pairs that can be associated with
     // repeated training.
-    AM(int vecLen, int density) {
+    public AM(int vecLen, int density) {
         this.vecLen = vecLen;
         this.density = density;
         hash = System.nanoTime();

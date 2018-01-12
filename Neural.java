@@ -2,7 +2,7 @@
 // Example. Not part of Data Reservoir Compute AI.
 package s6regen;
 
-class Neural {
+public class Neural {
 
   final int vecLen;
   final int density;
@@ -19,7 +19,7 @@ class Neural {
   RNG rnd;
 
   // vecLen must be 2,4,8,16,32.....
-  Neural(int vecLen, int density, int depth,int precision) {
+  public Neural(int vecLen, int density, int depth,int precision) {
     this.vecLen=vecLen;
     this.density=density;
     this.depth=depth;

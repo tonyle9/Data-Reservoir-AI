@@ -3,6 +3,7 @@ package s6regen;
 // Includes functions Java can't autovectorize so well.  Though I could have
 // left out signOfNative.  WHT=Walsh Hadamard transform.
 // OS=Linux AMD64, Library to install libwth.so. Falls back to pure Java otherwise. 
+
 public class WHT {
 
     static final boolean useNative;

@@ -9,7 +9,7 @@ final public class RNG {
     private long s1;
     private long s2;
 
-    RNG() {
+    public RNG() {
         setSeed(System.nanoTime());
     }
 
