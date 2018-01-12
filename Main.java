@@ -15,13 +15,16 @@ public class Main extends Application {
     public static void main(String[] args) {
 
         Reservoir r = new Reservoir(16, 64, 16, 16, 16);
-        Compute c = new ComputeLayer(r, 3);
+        // Compute c = new ComputeLayer(r, 3);
+        //Compute c=new ComputeAM(r,3);
+        Compute c=new ComputeAMWritable(r,3,0);
         r.addComputeUnit(c);
         r.prepareForUse();
 
         float[] in = new float[16];
         Arrays.fill(in, 3.3f);
         r.setInput(in);
+        r.computeAll();
         r.computeAll();
 
         launch(args);

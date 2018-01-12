@@ -123,7 +123,8 @@ public class Reservoir implements Serializable {
         float[] wt = weights;    // also weights because not final
         int i = 0;
         while (i < computeSize) {
-            g[i++] = reservoir[i] * wt[wtIdx++];
+            g[i] = reservoir[i] * wt[wtIdx++];
+            i++;
         }
         while (i < reservoirSize) {
             WHT.fastRP(g, hashIndex++);
@@ -144,14 +145,15 @@ public class Reservoir implements Serializable {
         while (i < reservoirSize) {
             WHT.fastRP(s, hashIndex++);
             for (int j = 0; j < computeSize; j++) {
-                reservoir[i++] += s[j] * wt[wtIdx++];
+                reservoir[i] += s[j] * wt[wtIdx++];
+                i++;
             }
         }
         weightIndex = wtIdx;  // put back the new index
     }
 
     void scatterWritable(float[] s, int location) {
-        System.arraycopy(s, 0, reservoir, inputSize + location, s.length);
+        System.arraycopy(s, 0, reservoir, inputSize + location, computeSize);
     }
 
     int sizeGather() {
