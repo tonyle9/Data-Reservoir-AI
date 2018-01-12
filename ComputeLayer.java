@@ -15,19 +15,24 @@ public class ComputeLayer extends Compute {
 
     @Override
     public void compute() {
-        int mask = reservoir.computeSize - 1;
+        int cs = reservoir.computeSize;
         int len = reservoir.computeSize * density;
         float[] workA = reservoir.computeBuffers[0];
         float[] workB = reservoir.computeBuffers[1];
+        float[] wt = reservoir.weights;    // get a local copy as an optimization
         reservoir.gather(workA);
-        Arrays.fill(workB, 0f);
-        for (int i = 0; i < len; i++) {
-            int idx = i & mask;
-            if (idx == 0) {
-                WHT.fastRP(workA, reservoir.hashIndex++);
-            }
-            workB[idx] += workA[idx] * reservoir.weights[reservoir.weightIndex++];
+        int wtIdx = reservoir.weightIndex; // must get after gather
+        WHT.fastRP(workA, reservoir.hashIndex++);
+        for (int i = 0; i < cs; i++) {
+            workB[i] = workA[i] * wt[wtIdx++];
         }
+        for (int i = cs; i < len; i += cs) {
+            WHT.fastRP(workA, reservoir.hashIndex++);
+            for (int j = 0; j < cs; j++) {
+                workB[j] += workA[j] * wt[wtIdx++];
+            }
+        }
+        reservoir.weightIndex = wtIdx;    // must set before scatter
         reservoir.scatter(workB);
     }
 

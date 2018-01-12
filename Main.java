@@ -13,18 +13,17 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     public static void main(String[] args) {
-       
-        
-        Reservoir r=new Reservoir(16,64,16,16,16);
-        Compute c=new ComputeLayer(r,3);
+
+        Reservoir r = new Reservoir(16, 64, 16, 16, 16);
+        Compute c = new ComputeLayer(r, 3);
         r.addComputeUnit(c);
         r.prepareForUse();
-        
-        float[] in=new float[16];
+
+        float[] in = new float[16];
         Arrays.fill(in, 3.3f);
         r.setInput(in);
         r.computeAll();
-        
+
         launch(args);
     }
 

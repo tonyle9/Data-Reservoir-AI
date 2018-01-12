@@ -8,21 +8,22 @@
 // information in the weights array (or a specific place when
 // using scatterWritable.
 package s6regen;
+
 public abstract class Compute implements java.io.Serializable {
-    
+
     final Reservoir reservoir;
-    
-    public Compute(Reservoir r){
-        reservoir=r;
+
+    public Compute(Reservoir r) {
+        reservoir = r;
     }
-    
-    public void resetHeldState(){
+
+    public void resetHeldState() {
     }
-    
+
     public abstract void compute();
 
     public abstract int weightSize();
-    
+
     public abstract int buffersRequired();
-    
+
 }

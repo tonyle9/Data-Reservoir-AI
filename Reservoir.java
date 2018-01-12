@@ -57,8 +57,9 @@ public class Reservoir implements Serializable {
     }
 
 // Call after adding compute units. Don't add more compute units and call again.
+// Also sets up after deserialization. Called from the readObject() method.    
     public void prepareForUse() {
-        reservoir = new float[reservoirSize];
+        reservoir = new float[reservoirSize];  //transient
         int bN = 0;
         for (Compute c : list) {
             weightSize += c.weightSize();
@@ -66,11 +67,11 @@ public class Reservoir implements Serializable {
                 bN = c.buffersRequired();
             }
         }
-        computeBuffers = new float[bN][computeSize];
-        rng = new RNG();
-        if (weights == null) {
+        computeBuffers = new float[bN][computeSize];    //transient
+        rng = new RNG();                                //transient
+        if (weights == null) {  // if deserializing weights typically != null
             weights = new float[weightSize];
-            for (int i = 0; i < weightSize; i++) {
+            for (int i = 0; i < weightSize; i++) {  // randomize inital weights.
                 weights[i] = rng.nextFloatSym();
             }
         }
@@ -83,7 +84,8 @@ public class Reservoir implements Serializable {
             c.compute();
         }
     }
-    
+
+// clears all held state such as in associative memory.    
     public void resetHeldStateAll() {
         for (Compute c : list) {
             c.resetHeldState();
@@ -103,41 +105,49 @@ public class Reservoir implements Serializable {
             weights[i] = rng.mutateXSym(weights[i], mutatePrecision);
         }
     }
-    
-    public int getWeightSize(){
+
+    public int getWeightSize() {
         return weightSize;
     }
-    
-    public void getWeights(float[] vec){
+
+    public void getWeights(float[] vec) {
         System.arraycopy(weights, 0, vec, 0, weightSize);
     }
-    
-    public void setWeights(float[] vec){
+
+    public void setWeights(float[] vec) {
         System.arraycopy(vec, 0, weights, 0, weightSize);
     }
 
     void gather(float[] g) {
-        int mask = computeSize - 1;
-        for (int i = 0; i < computeSize; i++) {
-            g[i] = reservoir[i] * weights[weightIndex++];
+        int wtIdx = weightIndex; // Get as local as an optimization
+        float[] wt = weights;    // also weights because not final
+        int i = 0;
+        while (i < computeSize) {
+            g[i++] = reservoir[i] * wt[wtIdx++];
         }
-        for (int i = computeSize; i < reservoirSize; i++) {
-            if ((i & mask) == 0) {
-                WHT.fastRP(g, hashIndex++);
+        while (i < reservoirSize) {
+            WHT.fastRP(g, hashIndex++);
+            for (int j = 0; j < computeSize; j++) {
+                g[j] += reservoir[i++] * wt[wtIdx++];
             }
-            g[i & mask] = +reservoir[i] * weights[weightIndex++];
         }
+        weightIndex = wtIdx;  // set weightIndex to correct value
         WHT.fastRP(g, hashIndex++);
     }
 
+// s is destroyed by this method, it is assumed the compute unit will not need
+// it again.
     void scatter(float[] s) {
-        int mask = computeSize - 1;
-        for (int i = inputSize + writableSize; i < reservoirSize; i++) {
-            if ((i & mask) == 0) {
-                WHT.fastRP(s, hashIndex++);
+        int wtIdx = weightIndex; // Get as local as an optimization
+        float[] wt = weights;    // also weights because not final
+        int i = inputSize + writableSize;
+        while (i < reservoirSize) {
+            WHT.fastRP(s, hashIndex++);
+            for (int j = 0; j < computeSize; j++) {
+                reservoir[i++] += s[j] * wt[wtIdx++];
             }
-            reservoir[i] += s[i & mask] * weights[weightIndex++];
         }
+        weightIndex = wtIdx;  // put back the new index
     }
 
     void scatterWritable(float[] s, int location) {

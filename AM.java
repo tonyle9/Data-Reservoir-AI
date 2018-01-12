@@ -54,9 +54,9 @@ class AM implements Serializable {
             VecOps.multiplyAddTo(weights[i], workB, bipolar[i]);  // to give the required output
         }
     }
-    
-    public void reset(){
-        for(float[] x:weights){
+
+    public void reset() {
+        for (float[] x : weights) {
             Arrays.fill(x, 0f);
         }
     }
