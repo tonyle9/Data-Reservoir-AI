@@ -84,6 +84,7 @@ public class Reservoir implements Serializable {
         for (Compute c : list) {
             c.compute();
         }
+        assert weightIndex==weightSize:"Error in Compute subclass weightIndex or weightSize";
     }
 
 // clears all held state such as in associative memory.    
@@ -175,6 +176,17 @@ public class Reservoir implements Serializable {
         }
         float adj = 1f / (float) Math.sqrt((sumSq / (reservoirSize - start)) + MIN_SQ);
         for (int i = start; i < reservoirSize; i++) {
+            reservoir[i] *= adj;
+        }
+    }
+    
+      void normalizeInput() {
+        float sumSq = 0f;
+        for (int i = 0; i < inputSize; i++) {
+            sumSq += reservoir[i] * reservoir[i];
+        }
+        float adj = 1f / (float) Math.sqrt((sumSq / inputSize) + MIN_SQ);
+        for (int i = 0; i < inputSize; i++) {
             reservoir[i] *= adj;
         }
     }

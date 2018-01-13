@@ -17,7 +17,8 @@ public class Main extends Application {
         Reservoir r = new Reservoir(16, 64, 16, 16, 16);
         // Compute c = new ComputeLayer(r, 3);
         //Compute c=new ComputeAM(r,3);
-        Compute c=new ComputeAMWritable(r,3,0);
+        //Compute c=new ComputeAMWritable(r,3,0);
+        Compute c=new ComputeLayerFullConSq(r);
         r.addComputeUnit(c);
         r.prepareForUse();
 

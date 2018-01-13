@@ -1,20 +1,16 @@
-// Calculates a single neural network layer, linear/no activation function.
 package s6regen;
+// Fully connected layer
+// Calculates a single neural network layer with x square activation function.
 
-public class ComputeLayer extends Compute {
+public class ComputeLayerFullConSq extends Compute {
 
-    private final int density;
-
-    ComputeLayer(Reservoir r, int density) {
+    ComputeLayerFullConSq(Reservoir r) {
         super(r);
-        assert density > 0 : "Density at least 1";
-        this.density = density;
     }
 
     @Override
     public void compute() {
         int cs = reservoir.computeSize;
-        int len = reservoir.computeSize * density;
         float[] workA = reservoir.computeBuffers[0];
         float[] workB = reservoir.computeBuffers[1];
         float[] wt = reservoir.weights;    // get a local copy as an optimization
@@ -22,21 +18,21 @@ public class ComputeLayer extends Compute {
         int wtIdx = reservoir.weightIndex; // must get after gather
         WHT.fastRP(workA, reservoir.hashIndex++);
         for (int i = 0; i < cs; i++) {
-            workB[i] = workA[i] * wt[wtIdx++];
+            workB[i] = workA[0] * wt[wtIdx++];
         }
-        for (int i = cs; i < len; i += cs) {
-            WHT.fastRP(workA, reservoir.hashIndex++);
+        for (int i = 1; i < cs; i++) {
             for (int j = 0; j < cs; j++) {
-                workB[j] += workA[j] * wt[wtIdx++];
+                workB[j] += workA[i] * wt[wtIdx++];
             }
         }
         reservoir.weightIndex = wtIdx;    // must set before scatter
+        VecOps.multiply(workB, workB, workB);
         reservoir.scatter(workB);
     }
 
     @Override
     public int weightSize() {
-        return reservoir.sizeGather() + reservoir.sizeScatter() + density * reservoir.computeSize;
+        return reservoir.sizeGather() + reservoir.sizeScatter() + reservoir.computeSize * reservoir.computeSize;
     }
 
     @Override

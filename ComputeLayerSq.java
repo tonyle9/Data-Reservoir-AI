@@ -1,6 +1,5 @@
 package s6regen;
 
-import java.util.Arrays;
 // Calculates a single neural network layer with x square activation function.
 // Sparsity inducing and no problem with evolution based training.
 
