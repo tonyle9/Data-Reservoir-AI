@@ -14,12 +14,16 @@ public class Main extends Application {
 
     public static void main(String[] args) {
 
-        Reservoir r = new Reservoir(16, 64, 16, 16, 16);
-        // Compute c = new ComputeLayer(r, 3);
-        //Compute c=new ComputeAM(r,3);
-        //Compute c=new ComputeAMWritable(r,3,0);
-        Compute c=new ComputeLayerFullConSq(r);
-        r.addComputeUnit(c);
+        Reservoir r = new Reservoir(16, 128, 16, 16, 16);
+        r.addComputeUnit(new ComputeNormalizeInput(r));
+        r.addComputeUnit(new ComputeRandomWritable(r,0));
+        r.addComputeUnit(new ComputeAM(r,3));
+        r.addComputeUnit(new ComputeAMWritable(r,3,16));
+        r.addComputeUnit(new ComputeBinaryWritable(r,16*2));
+        r.addComputeUnit(new ComputeLayer(r,3));
+        r.addComputeUnit(new ComputeLayerSq(r,3));
+        r.addComputeUnit(new ComputeLayerFullConSq(r));
+        r.addComputeUnit(new ComputeNormalizeGeneral(r));
         r.prepareForUse();
 
         float[] in = new float[16];

@@ -168,7 +168,7 @@ public class Reservoir implements Serializable {
         return reservoirSize - inputSize - writableSize;
     }
 
-    void normalize() {
+    void normalizeGeneral() {
         int start = inputSize + writableSize;
         float sumSq = 0f;
         for (int i = start; i < reservoirSize; i++) {

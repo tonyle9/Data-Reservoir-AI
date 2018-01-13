@@ -29,7 +29,7 @@ public final class ComputeAMWritable extends Compute {
 
     @Override
     public int weightSize() {
-        return 3 * reservoir.sizeGather() + reservoir.sizeScatter();
+        return 3 * reservoir.sizeGather();
     }
 
     @Override

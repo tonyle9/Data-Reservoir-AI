@@ -9,7 +9,7 @@ public final class ComputeNormalizeGeneral extends Compute {
 
     @Override
     public void compute() {
-        reservoir.normalize();
+        reservoir.normalizeGeneral();
     }
 
     @Override
