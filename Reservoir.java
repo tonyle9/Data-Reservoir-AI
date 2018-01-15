@@ -149,8 +149,11 @@ public class Reservoir implements Serializable {
         while (i < reservoirSize) {
             WHT.fastRP(s, hashIndex++);
             for (int j = 0; j < computeSize; j++) {
-                res[i] += s[j] * wt[wtIdx++];
-                i++;
+                float p=wt[wtIdx++];
+                if(p>=0f){  //  if p<0 then leave the reservoir value unchanged.
+                    res[i]= s[j]*p+(1f-p)*res[i]; // otherwise blend the two.
+                }
+                i++; 
             }
         }
         weightIndex = wtIdx;  // put back the new index

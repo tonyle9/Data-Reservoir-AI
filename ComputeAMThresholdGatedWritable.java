@@ -1,16 +1,17 @@
-// Associative memory to provide medium term memory.
-// Reads input address from one gathered source and scatters the result.
-// Reads input from another source as an address and stores to the writable area.
+// Associative memory to provide long term memory.
+// Reads input address from one gathered source and scatters the result to the writable section.
+// Reads input from another source as an address and stores a further source after
+// threshold gating.
 package s6regen;
 
-public final class ComputeAMWritable extends Compute {
+public final class ComputeAMThresholdGatedWritable extends Compute {
 
-    private final AM memory;
+    private final AMThresholdGated memory;
     private final int location;
 
-    public ComputeAMWritable(Reservoir r, int density, int writableLocation) {
+    public ComputeAMThresholdGatedWritable(Reservoir r, int density,float threshold, int writableLocation) {
         super(r);
-        memory = new AM(r.computeSize, density);
+        memory = new AMThresholdGated(r.computeSize, density,threshold);
         location = writableLocation;
     }
 

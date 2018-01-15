@@ -1,20 +1,14 @@
-/* Associative memory class
-With locality sensitive hashing (LSH) only a few bits change with a small change in input.
-Here in each dimension some output bits of a LSH (-1,1 bipolar) are weighted and summed.
-For a particular input the weights are easily (and equally) adjusted to give a required output.
-For a previously stored value retrived again the newly stored adjustment will tend to cancel
-out to zero (with a Gaussian noise residue), assuming the LHS bit response to the two inputs
-is quite different bit-wise. 
- */
+// Associative memory class, threshold gated write to allow long term memory.
 package s6regen;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-public final class AM implements Serializable {
+public final class AMThresholdGated implements Serializable {
 
     private final int vecLen;
     private final int density;
+    private final float threshold;
     private final long hash;
     private final float[][] weights;
     private final float[][] bipolar;
@@ -24,9 +18,10 @@ public final class AM implements Serializable {
     // vecLen must be 2,4,8,16,32.....
     // density is the maximum number of vector pairs that can be associated with
     // repeated training.
-    public AM(int vecLen, int density) {
+    public AMThresholdGated(int vecLen, int density,float threshold) {
         this.vecLen = vecLen;
         this.density = density;
+        this.threshold=threshold;
         hash = System.nanoTime();
         weights = new float[density][vecLen];
         bipolar = new float[density][vecLen];
@@ -44,14 +39,22 @@ public final class AM implements Serializable {
         }
     }
 
+    // If target after truncation equals zero no value is stored, otherwise
+    // the truncated value is stored.  Giving (self gated) storage.
     public void trainVec(float[] targetVec, float[] inVec) {
         float rate = 1f / density;
         recallVec(workB, inVec);
+        VecOps.truncate(workA,targetVec, threshold);    // truncate the target
         for (int i = 0; i < vecLen; i++) {
-            workB[i] = (targetVec[i] - workB[i]) * rate;    //get the error term in workB
+            workB[i] = (workA[i] - workB[i]) * rate;    //get the error term in workB
         }
-        for (int i = 0; i < density; i++) {                       // correct the weights 
-            VecOps.multiplyAddTo(weights[i], workB, bipolar[i]);  // to give the required output
+        for (int i = 0; i < density; i++) {             // correct the weights 
+            float[] wt=weights[i],bi=bipolar[i];
+            for(int j=0;j<vecLen;j++){
+                if(workA[j]!=0f){   // if not gated out by truncation update the weight
+                    wt[j]+=workB[j]*bi[j];
+                }
+            }
         }
     }
 

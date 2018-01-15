@@ -1,15 +1,16 @@
-// Associative memory to provide medium term memory.
+// Associative memory to provide long term memory.
 // Reads input address from one gathered source and scatters the result.
-// Reads input from another source as an address and stores a further source.
+// Reads input from another source as an address and stores a further source after
+// threshold gating.
 package s6regen;
 
-public final class ComputeAM extends Compute{
+public final class ComputeAMThresholdGated extends Compute{
     
-    private final AM memory;
+    private final AMThresholdGated memory;
     
-    ComputeAM(Reservoir r,int density){
+    ComputeAMThresholdGated(Reservoir r,int density,float threshold){
         super(r);
-        memory=new AM(r.computeSize,density);
+        memory=new AMThresholdGated(r.computeSize,density,threshold);
     }
     
     @Override
