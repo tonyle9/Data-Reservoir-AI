@@ -84,7 +84,7 @@ public class Reservoir implements Serializable {
         for (Compute c : list) {
             c.compute();
         }
-        assert weightIndex==weightSize:"Error in Compute subclass weightIndex or weightSize";
+        assert weightIndex == weightSize : "Error in Compute subclass weightIndex or weightSize";
     }
 
 // clears all held state such as in associative memory.    
@@ -148,12 +148,18 @@ public class Reservoir implements Serializable {
         int i = inputSize + writableSize;
         while (i < reservoirSize) {
             WHT.fastRP(s, hashIndex++);
-            for (int j = 0; j < computeSize; j++) {
+            /*    for (int j = 0; j < computeSize; j++) {
                 float p=wt[wtIdx++];
                 if(p>=0f){  //  if p<0 then leave the reservoir value unchanged.
                     res[i]= s[j]*p+(1f-p)*res[i]; // otherwise blend the two.
                 }
                 i++; 
+            } */
+            for (int j = 0; j < computeSize; j++) {
+                float p = wt[wtIdx++];
+                p*=p; // smooth non-linear blending to make things easier for evolution, if wt is low eg 0.1
+                res[i] = s[j] * p + (1f - p) * res[i]; // the reservoir is hardly effected
+                i++;
             }
         }
         weightIndex = wtIdx;  // put back the new index
@@ -182,8 +188,8 @@ public class Reservoir implements Serializable {
             reservoir[i] *= adj;
         }
     }
-    
-      void normalizeInput() {
+
+    void normalizeInput() {
         float sumSq = 0f;
         for (int i = 0; i < inputSize; i++) {
             sumSq += reservoir[i] * reservoir[i];
