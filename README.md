@@ -1,8 +1,10 @@
 # Data-Reservoir-Compute-AI
-Copy and paste mishmash of comment about the code.  I'll tidy it up later.
+Copy and paste mishmash of comments about the code.  I'll tidy it up later.
 An artificial intelligence systems based on a data reservoir acted on by compute units.  The compute units can be a single neural network layer, an associative memory or any other type of compute.  The reservoir is broken into 3 parts 
 [input][writable][general].
 Information is gathered by random projection from the entire reservoir via a selection process and sent to a compute unit.  The output of the compute unit can be either written to a specific writable part or added to the general part via a selection process.  The system is to learn by evolution, for example you create a parent and mutated child reservoir and swap their roles depending on who is better.
+
+
 For each compute unit information is gathered from the entire reservoir first by selective weighting and then dimension reduction by random projection. A change in a single reservoir parameter will result in a change in a unique pattern in the dimension reduce data.  The compute units could be a single neural network layer, associative memory or any other type of compute.   The result of the compute can either go to a unique location in the writable part of the reservoir or more usually it is scattered (by weight based blending) into the general part of the reservoir.  Again using random projections a unique pattern in the output of the compute units corresponds to a unique point in the general section of the reservoir.  Any number of patterns can be mapped at the same time and also there is weighting process to make that even more selective.  This should allow really complex connectivity and modularity to evolve.
 
 I changed the scatter mechanism into the data reservoir.  After the dimension increasing random projection up to the size of the changeable part of the reservoir a weight based blending of new and old is done.  It's based on the square of the weight.  p=w*w;  next reservoir entry=p*new+(1-p)*q.
